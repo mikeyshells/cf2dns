@@ -21,10 +21,10 @@ DOMAINS = {
 }
 
 #解析生效条数 免费的DNSPod相同线路最多支持2条解析
-AFFECT_NUM = 2
+AFFECT_NUM = 5
 
 #DNS服务商 如果使用DNSPod改为1 如果使用阿里云解析改成2  如果使用华为云解析改成3
-DNS_SERVER = 1
+DNS_SERVER = 3
 
 #如果使用华为云解析 需要从API凭证-项目列表中获取
 REGION_HW = 'cn-east-3'
@@ -172,14 +172,19 @@ def main(cloud):
                         for line in lines:
                             if line == "CM":
                                 changeDNS("CM", cm_info, temp_cf_cmips, domain, sub_domain, cloud)
+                                time.sleep(10)
                             elif line == "CU":
                                 changeDNS("CU", cu_info, temp_cf_cuips, domain, sub_domain, cloud)
+                                time.sleep(10)
                             elif line == "CT":
                                 changeDNS("CT", ct_info, temp_cf_ctips, domain, sub_domain, cloud)
+                                time.sleep(10)
                             elif line == "AB":
                                 changeDNS("AB", ab_info, temp_cf_abips, domain, sub_domain, cloud)
+                                time.sleep(10)
                             elif line == "DEF":
                                 changeDNS("DEF", def_info, temp_cf_defips, domain, sub_domain, cloud)
+                                time.sleep(10)
         except Exception as e:
             traceback.print_exc()  
             log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----MESSAGE: " + str(e))
