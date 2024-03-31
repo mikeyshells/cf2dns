@@ -81,12 +81,12 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 cf_ip = c_info.pop(random.randint(0,len(c_info)-1))["ip"]
                 if cf_ip in str(s_info):
                     continue
+                time.sleep(5) # 控制请求速度
                 ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
                 if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] == "PENDING_UPDATE"):
                     log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
                 else:
                     log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + ret["message"] )
-                time.sleep(5)
         elif create_num > 0:
             for i in range(create_num):
                 if len(c_info) == 0:
@@ -94,12 +94,12 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 cf_ip = c_info.pop(random.randint(0,len(c_info)-1))["ip"]
                 if cf_ip in str(s_info):
                     continue
+                time.sleep(5)
                 ret = cloud.create_record(domain, sub_domain, cf_ip, recordType, line, TTL)
                 if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] == "PENDING_UPDATE"):
                     log_cf2dns.logger.info("CREATE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip )
                 else:
                     log_cf2dns.logger.error("CREATE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + ret["message"] )
-                time.sleep(5)
         else:
             for info in s_info:
                 if create_num == 0 or len(c_info) == 0:
@@ -108,13 +108,13 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 if cf_ip in str(s_info):
                     create_num += 1
                     continue
+                time.sleep(5)
                 ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
                 if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] == "PENDING_UPDATE"):
                     log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
                 else:
                     log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + ret["message"] )
                 create_num += 1
-                time.sleep(5)
     except Exception as e:
             log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----MESSAGE: " + str(e))
 
@@ -151,7 +151,7 @@ def main(cloud):
                                     else:
                                         log_cf2dns.logger.error("DELETE DNS ERROR: ----Time: "  + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+record["line"] + "----MESSAGE: " + retMsg["message"] )
                     ret = cloud.get_record(domain, 100, sub_domain, recordType)
-                    if DNS_SERVER != 1 or ret["code"] == 0 :
+                    if DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["data"]["records"]:
                         if DNS_SERVER == 1 and "Free" in ret["data"]["domain"]["grade"] and AFFECT_NUM > 2:
                             AFFECT_NUM = 2
                         cm_info = []

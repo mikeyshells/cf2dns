@@ -26,7 +26,7 @@ class Logger(object):
         # W 每星期（interval==0时代表星期一）
         # midnight 每天凌晨
         th.setFormatter(format_str)#设置文件里写入的格式
-        self.logger.addHandler(sh) #把对象加到logger里
+        # self.logger.addHandler(sh) #把对象加到logger里
         self.logger.addHandler(th)
 if __name__ == '__main__':
     log = Logger('monitor.log',level='debug')
