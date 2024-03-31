@@ -117,6 +117,7 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 create_num += 1
     except Exception as e:
             log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----MESSAGE: " + str(e))
+            time.sleep(45) # 请求失败后sleep 45秒，防止后续请求出错
 
 def main(cloud):
     global AFFECT_NUM, TYPE
