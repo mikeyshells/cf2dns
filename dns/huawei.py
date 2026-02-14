@@ -31,6 +31,7 @@ class HuaWeiApi():
 
     def get_record(self, domain, length, sub_domain, record_type):
         request = ListRecordSetsWithLineRequest()
+        request.zone_id = self.zone_id[domain + '.']
         request.limit = length
         request.type = record_type
         if sub_domain == '@':
