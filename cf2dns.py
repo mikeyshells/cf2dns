@@ -82,11 +82,15 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 if cf_ip in str(s_info):
                     continue
                 time.sleep(5) # 控制请求速度
-                ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
-                if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
-                    log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
-                else:
-                    log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + ret["message"] )
+                try:
+                    ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
+                    if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
+                        log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
+                    else:
+                        log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + str(ret) )
+                except Exception as e:
+                    log_cf2dns.logger.warning("CHANGE DNS SKIPPED: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip + "----MESSAGE: " + str(e))
+                    continue
         elif create_num > 0:
             for i in range(create_num):
                 if len(c_info) == 0:
@@ -95,11 +99,15 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                 if cf_ip in str(s_info):
                     continue
                 time.sleep(5)
-                ret = cloud.create_record(domain, sub_domain, cf_ip, recordType, line, TTL)
-                if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
-                    log_cf2dns.logger.info("CREATE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip )
-                else:
-                    log_cf2dns.logger.error("CREATE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip + "----MESSAGE: " + str(ret) )
+                try:
+                    ret = cloud.create_record(domain, sub_domain, cf_ip, recordType, line, TTL)
+                    if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
+                        log_cf2dns.logger.info("CREATE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip )
+                    else:
+                        log_cf2dns.logger.error("CREATE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip + "----MESSAGE: " + str(ret) )
+                except Exception as e:
+                    log_cf2dns.logger.warning("CREATE DNS SKIPPED: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip + "----MESSAGE: " + str(e))
+                    continue
         else:
             for info in s_info:
                 if create_num == 0 or len(c_info) == 0:
@@ -109,11 +117,14 @@ def changeDNS(line, s_info, c_info, domain, sub_domain, cloud):
                     create_num += 1
                     continue
                 time.sleep(5)
-                ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
-                if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
-                    log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
-                else:
-                    log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + ret["message"] )
+                try:
+                    ret = cloud.change_record(domain, info["recordId"], sub_domain, cf_ip, recordType, line, TTL)
+                    if(DNS_SERVER in (1,2) and ret["code"] == 0 or DNS_SERVER == 3 and ret["status"] in ("PENDING_CREATE", "PENDING_UPDATE")):
+                        log_cf2dns.logger.info("CHANGE DNS SUCCESS: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip )
+                    else:
+                        log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----RECORDID: " + str(info["recordId"]) + "----VALUE: " + cf_ip + "----MESSAGE: " + str(ret) )
+                except Exception as e:
+                    log_cf2dns.logger.warning("CHANGE DNS SKIPPED: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----DOMAIN: " + domain + "----SUBDOMAIN: " + sub_domain + "----RECORDLINE: "+line+"----VALUE: " + cf_ip + "----MESSAGE: " + str(e))
                 create_num += 1
     except Exception as e:
             log_cf2dns.logger.error("CHANGE DNS ERROR: ----Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "----MESSAGE: " + str(e))
