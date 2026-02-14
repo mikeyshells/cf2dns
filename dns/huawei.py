@@ -44,7 +44,7 @@ class HuaWeiApi():
         for record in data['recordsets']:
             if (sub_domain == '@' and domain + "." == record['name']) or (sub_domain + '.' + domain + "." == record['name']):
                 record['line'] = self.line_format(record['line'])
-                record['value'] = '1.1.1.1'
+                record['value'] = record['records'][0] if record.get('records') else '1.1.1.1'
                 records_temp.append(record)
         result['data'] = {'records': records_temp}
         return result
